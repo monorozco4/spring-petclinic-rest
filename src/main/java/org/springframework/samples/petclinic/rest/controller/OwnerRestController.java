@@ -39,6 +39,10 @@ import jakarta.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
 /**
  * @author Vitaliy Fedoriv
  */
@@ -191,5 +195,16 @@ public class OwnerRestController implements OwnersApi {
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Endpoint de prova per verificar la cobertura de codi a la pràctica.
+     * Retorna una salutació simple.
+     * @return una resposta HTTP 200 amb el text de salutació.
+     */
+    @PreAuthorize("hasRole(@roles.OWNER_ADMIN)")
+    @GetMapping("/owners/salutacio")
+    public ResponseEntity<String> getSalutacio() {
+        return new ResponseEntity<>("Hola Teknos!", HttpStatus.OK);
     }
 }

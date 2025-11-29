@@ -52,6 +52,9 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test class for {@link OwnerRestController}
@@ -490,6 +493,42 @@ class OwnerRestControllerTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedPetAsJSON))
             .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Test unitari per validar que no es pot crear un Owner amb dades incorrectes.
+     * <p>
+     * Aquest test intenta enviar una petició POST amb un cos buit ("{}") al controlador.
+     * S'espera que el sistema respongui amb un error 400 (Bad Request) degut a les
+     * validacions @Valid. Això incrementa la cobertura provant les rutes d'error.
+     * </p>
+     * @throws Exception si falla l'execució del MockMvc.
+     */
+    @Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    void shouldNotCreateOwnerWithEmptyBody() throws Exception {
+        // When: Fem una petició POST a /api/owners enviant un JSON buit "{}"
+        mockMvc.perform(post("/api/owners")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{}")) // Enviem un objecte buit per forçar l'error
+                .andExpect(status().isBadRequest()); // Esperem que falli (400)
+    }
+
+    /**
+     * Test unitari per al nou endpoint de salutació.
+     * <p>
+     * Valida que la petició GET a /api/owners/salutacio retorna
+     * el missatge esperat "Hola Teknos!" i un codi 200 OK.
+     * Aquest test garanteix la cobertura del nou mètode implementat.
+     * </p>
+     * @throws Exception si hi ha errors en la petició mock.
+     */
+    @Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    void shouldReturnSalutacio() throws Exception {
+        mockMvc.perform(get("/api/owners/salutacio"))
+               .andExpect(status().isOk())
+               .andExpect(content().string("Hola Teknos!"));
     }
 
 }
